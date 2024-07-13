@@ -1,28 +1,24 @@
-// client/src/App.js
-import React, { useState, useEffect } from "react";
-import axios from "axios";
+// src/components/App.js
+import React, { useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { loadSettings, updateSettings } from "../actions/settingActions.js";
 
 const App = () => {
-  const [settings, setSettings] = useState({});
-  const [loading, setLoading] = useState(true);
+  const dispatch = useDispatch();
+  const { settings, loading } = useSelector((state) => state.settings);
 
   useEffect(() => {
-    const fetchSettings = async () => {
-      const result = await axios.get("/api/settings");
-      setSettings(result.data);
-      setLoading(false);
-    };
-    fetchSettings();
-  }, []);
+    dispatch(loadSettings());
+  }, [dispatch]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setSettings({ ...settings, [name]: value });
+    dispatch(updateSettings({ ...settings, [name]: value }));
   };
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = (e) => {
     e.preventDefault();
-    await axios.post("/api/settings", settings);
+    dispatch(updateSettings(settings));
   };
 
   if (loading) return <div>Loading...</div>;
